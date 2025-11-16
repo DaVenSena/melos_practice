@@ -16,10 +16,9 @@ melos:
   command:
     bootstrap:
       hooks:
-        pre: flutter clean
-        post: dart run build_runner build --delete-conflicting-outputs
+        post: melos run build_runner
   scripts:
-    build:
+    build_runner:
       run: dart run build_runner build --delete-conflicting-outputs
       exec:
         concurrency: 4
@@ -27,3 +26,7 @@ melos:
         dependsOn: build_runner
     format:
       run: melos exec -- dart format --set-exit-if-changed .
+    clean_build:
+      run: flutter clean
+      exec:
+        concurrency: 1
