@@ -1,39 +1,25 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# core_utils
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+Utilidades y helpers compartidos entre paquetes y apps del monorepo. Centraliza funciones generales para evitar duplicación y mejorar la mantenibilidad.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+## Contenido típico
+- Helpers de fechas, validaciones, formateos, comparaciones.
+- Extensiones ligeras de tipos comunes.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
+## Instalación (monorepo con Melos)
+Tras `melos bootstrap`, importa lo que necesites:
 ```dart
-const like = 'sample';
+import 'package:core_utils/core_utils.dart';
 ```
 
-## Additional information
+## Ejemplo
+```dart
+final isEmptyOrNull = stringIsNullOrEmpty(miCadena);
+```
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+## Buenas prácticas
+- Solo agrega utilidades genéricas y sin dependencias de UI o datos.
+- Si una utilidad se vuelve específica de una capa, muévela al paquete correspondiente.
+
+## Licencia
+MIT

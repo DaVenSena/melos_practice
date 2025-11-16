@@ -1,39 +1,24 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# domain
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+Capa de dominio: modelos puros y contratos de repositorios. Define la lógica de negocio y las reglas que deben cumplir las implementaciones en `data`.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+## Contenido
+- `models`: entidades de dominio (`Task`, `User`).
+- `repositories`: interfaces/contratos para tareas y usuarios.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Principios
+- Sin dependencias de UI ni infraestructura.
+- Tipos y contratos estables para favorecer testeo y mantenimiento.
 
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
+## Uso
+Importa desde casos de uso o implementaciones:
 ```dart
-const like = 'sample';
+import 'package:domain/domain.dart';
 ```
 
-## Additional information
+## Relación con otras capas
+- `features_todo_app` consume `domain` para expresar reglas/casos de uso.
+- `data` implementa los contratos definidos en `domain`.
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+## Licencia
+MIT

@@ -1,39 +1,29 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# features_todo_app
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+Casos de uso de la aplicación To‑Do. Este paquete orquesta la lógica de negocio usando contratos de `domain` y sus implementaciones en `data`, exponiendo una API clara para la capa de presentación.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+## Casos de uso incluidos
+- Auth:
+  - `sign_in_usecase.dart`
+  - `sign_up_usecase.dart`
+  - `sign_out_usecase.dart`
+- Tasks:
+  - `get_tasks_usecase.dart`
+  - `add_task_usecase.dart`
+  - `update_task_usecase.dart`
+  - `delete_task_usecase.dart`
+  - `set_done_usecase.dart`
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
+## Uso
+Importa y ejecuta desde tus providers/controladores:
 ```dart
-const like = 'sample';
+import 'package:features_todo_app/use_cases.dart';
 ```
 
-## Additional information
+## Principios
+- Exponer la lógica de negocio lista para ser consumida por la UI.
+- Mantener dependencias de infraestructura encapsuladas en `data`.
+- Depender de `domain` para modelos/contratos.
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+## Licencia
+MIT
