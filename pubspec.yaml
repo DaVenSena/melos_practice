@@ -1,0 +1,29 @@
+name: todo_monorepo
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+dev_dependencies:
+  melos: ^7.3.0
+
+workspace:
+  - apps/todo_app
+  - packages/core_ui
+  - packages/core_utils
+  - packages/data
+  - packages/domain
+  - packages/features_todo_app
+
+melos:
+  command:
+    bootstrap:
+      hooks:
+        pre: flutter clean
+        post: dart run build_runner build --delete-conflicting-outputs
+  scripts:
+    build:
+      run: dart run build_runner build --delete-conflicting-outputs
+      exec:
+        concurrency: 4
+      packageFilters:
+        dependsOn: build_runner
+    format:
+      run: melos exec -- dart format --set-exit-if-changed .
