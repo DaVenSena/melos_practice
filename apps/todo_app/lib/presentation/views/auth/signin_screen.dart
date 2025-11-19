@@ -1,6 +1,7 @@
 import 'package:core_ui/custom_elevated_button.dart';
 import 'package:core_ui/custom_icon_button.dart';
 import 'package:core_ui/custom_text_button.dart';
+import 'package:domain/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_app/presentation/providers/user_provider.dart';
@@ -61,20 +62,20 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<UserState>(userProvider, (previous, next) {
-      final isNewError = next is UserError && previous is! UserError;
+    ref.listen<AsyncValue<UserModel>>(userProvider, (previous, next) {
+      final isNewError = next.hasError && (previous?.hasError ?? false);
       if (isNewError) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            _showErrorDialog(next.message);
+            _showErrorDialog(next.error.toString());
           }
         });
       }
     });
 
     final userState = ref.watch(userProvider);
-    final isLoading = userState is UserLoading;
-    final errorMessage = userState is UserError ? userState.message : null;
+    final isLoading = userState.isLoading;
+    final errorMessage = userState.hasError ? userState.error.toString() : null;
 
     return Scaffold(
       backgroundColor: Colors.white,

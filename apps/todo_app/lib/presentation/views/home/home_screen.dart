@@ -20,7 +20,7 @@ class HomeScreen extends ConsumerWidget {
     final tasksAsync = ref.watch(tasksNotifierProvider);
     final user = ref.watch(
       userProvider.select(
-        (state) => state is UserAuthenticated ? state.user : null,
+        (state) => state.hasValue ? state.value : null,
       ),
     );
 

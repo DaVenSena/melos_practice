@@ -14,54 +14,28 @@ final signUpUsecaseProvider = Provider<SignUpUsecase>((ref) {
   return SignUpUsecaseImpl(usersRepository: repository);
 });
 
-sealed class UserState {
-  const UserState();
-}
-
-class UserInitial extends UserState {
-  const UserInitial();
-}
-
-class UserLoading extends UserState {
-  const UserLoading();
-}
-
-class UserAuthenticated extends UserState {
-  final UserModel user;
-  const UserAuthenticated(this.user);
-}
-
-class UserError extends UserState {
-  final String message;
-  const UserError(this.message);
-}
-
-class UserNotifier extends Notifier<UserState> {
-  @override
-  UserState build() {
-    return const UserInitial();
-  }
-
+class UserNotifier extends AsyncNotifier<UserModel> {
   SignInUsecase get _signInUsecase => ref.read(signInUsecaseProvider);
   SignUpUsecase get _signUpUsecase => ref.read(signUpUsecaseProvider);
   AppPrefs get _appPrefs => ref.read(appPrefsProvider);
 
-  Future<void> checkUser() async {
-    final user = await _appPrefs.getUser();
-    if (user != null) {
-      state = UserAuthenticated(user);
-    } else {
-      state = const UserInitial();
+  @override
+  Future<UserModel> build() async {
+    try {
+      return await _appPrefs.getUser() ?? UserModel(name: '', password: '');
+    } catch (e) {
+      return UserModel(name: '', password: '');
     }
   }
 
   Future<void> signIn(String username, String password) async {
     if (username.isEmpty || password.isEmpty) {
-      state = const UserError('Usuario y contraseña son requeridos');
+      state = AsyncValue.error(
+          'Usuario y contraseña son requeridos', StackTrace.current);
       return;
     }
 
-    state = const UserLoading();
+    state = const AsyncLoading();
     print('🔵 UserState: UserLoading');
 
     try {
@@ -69,58 +43,61 @@ class UserNotifier extends Notifier<UserState> {
 
       if (user != null) {
         await _appPrefs.setUser(user);
-        state = UserAuthenticated(user);
+        state = AsyncValue.data(user);
         print('🟢 UserState: UserAuthenticated - ${user.name}');
       } else {
-        state = const UserError('Usuario o contraseña incorrectos');
+        state = AsyncValue.error(
+            'Usuario o contraseña incorrectos', StackTrace.current);
         print('🔴 UserState: UserError - Credenciales incorrectas');
       }
-    } catch (e) {
-      state = UserError('Error al iniciar sesión: ${e.toString()}');
-      print('🔴 UserState: UserError - Exception: $e');
+    } catch (e, st) {
+      state = AsyncValue.error('Error al iniciar sesión: ${e.toString()}', st);
     }
   }
 
   Future<void> signUp(String username, String password) async {
     if (username.isEmpty || password.isEmpty) {
-      state = const UserError('Usuario y contraseña son requeridos');
+      state = AsyncValue.error(
+          'Usuario y contraseña son requeridos', StackTrace.current);
       return;
     }
 
     if (password.length < 6) {
-      state = const UserError('La contraseña debe tener al menos 6 caracteres');
+      state = AsyncValue.error(
+          'La contraseña debe tener al menos 6 caracteres', StackTrace.current);
       return;
     }
 
-    state = const UserLoading();
+    state = const AsyncLoading();
 
     try {
       final user = await _signUpUsecase(username, password);
 
       if (user != null) {
-        state = UserAuthenticated(user);
+        state = AsyncValue.data(user);
         await _appPrefs.setUser(user);
       } else {
-        state = const UserError(
-          'No se pudo crear el usuario. Puede que ya exista.',
-        );
+        state = AsyncValue.error(
+            'No se pudo crear el usuario. Puede que ya exista.',
+            StackTrace.current);
       }
     } catch (e) {
-      state = UserError('Error al registrarse: ${e.toString()}');
+      state = AsyncValue.error(
+          'Error al registrarse: ${e.toString()}', StackTrace.current);
     }
   }
 
   void signOut() {
-    state = const UserInitial();
+    state = AsyncValue.data(UserModel(name: '', password: ''));
   }
 
   void clearError() {
-    if (state is UserError) {
-      state = const UserInitial();
+    if (state.hasError) {
+      state = AsyncValue.data(UserModel(name: '', password: ''));
     }
   }
 }
 
-final userProvider = NotifierProvider<UserNotifier, UserState>(() {
+final userProvider = AsyncNotifierProvider<UserNotifier, UserModel>(() {
   return UserNotifier();
 });

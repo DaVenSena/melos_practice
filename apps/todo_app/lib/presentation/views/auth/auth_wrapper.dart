@@ -1,3 +1,4 @@
+import 'package:domain/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_app/presentation/providers/user_provider.dart';
@@ -13,35 +14,15 @@ class AuthWrapper extends ConsumerStatefulWidget {
 }
 
 class _AuthWrapperState extends ConsumerState<AuthWrapper> {
-  bool _isChecking = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkUserAuthentication();
-  }
-
-  Future<void> _checkUserAuthentication() async {
-    await Future.delayed(const Duration(milliseconds: 1500));
-
-    await ref.read(userProvider.notifier).checkUser();
-
-    if (mounted) {
-      setState(() {
-        _isChecking = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_isChecking) {
+    final userState = ref.watch(userProvider);
+
+    if (userState.isLoading) {
       return const SplashScreen();
     }
 
-    final userState = ref.watch(userProvider);
-
-    return userState.when(
+    return UserStateExtension(userState).when(
       initial: () => const SignInScreen(),
       loading: () => const SplashScreen(),
       authenticated: () => HomeScreen(),
@@ -50,7 +31,7 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
   }
 }
 
-extension UserStateExtension on UserState {
+extension UserStateExtension on AsyncValue<UserModel> {
   T when<T>({
     required T Function() initial,
     required T Function() loading,
@@ -58,14 +39,14 @@ extension UserStateExtension on UserState {
     required T Function(String message) error,
   }) {
     final state = this;
-    if (state is UserInitial) {
+    if (!state.hasValue && state.value?.id != null) {
       return initial();
-    } else if (state is UserLoading) {
+    } else if (state.isLoading) {
       return loading();
-    } else if (state is UserAuthenticated) {
+    } else if (state.value?.id != null && state.hasValue) {
       return authenticated();
-    } else if (state is UserError) {
-      return error(state.message);
+    } else if (state.hasError) {
+      return error(state.error.toString());
     }
     throw Exception('Estado no manejado: $state');
   }

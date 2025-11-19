@@ -30,7 +30,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final userState = ref.read(userProvider);
-    if (userState is! UserAuthenticated) {
+    if (!userState.hasValue || userState.value?.id == null) {
       _showErrorSnackBar('No hay usuario autenticado');
       return;
     }
@@ -39,7 +39,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
 
     try {
       final task = TaskModel(
-        userId: userState.user.id!,
+        userId: userState.value!.id!,
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
       );

@@ -1,4 +1,5 @@
 import 'package:domain/models/task.dart';
+import 'package:domain/models/user.dart';
 import 'package:features_todo_app/use_cases.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
     show
@@ -26,7 +27,7 @@ class TasksNotifier extends AsyncNotifier<List<TaskModel>> {
   Future<List<TaskModel>> build() async {
     final userId = ref.watch(
       userProvider.select(
-        (state) => (state is UserAuthenticated) ? state.user.id! : null,
+        (state) => (state is AsyncData<UserModel>) ? state.value.id! : null,
       ),
     );
     if (userId == null) return [];
@@ -35,7 +36,7 @@ class TasksNotifier extends AsyncNotifier<List<TaskModel>> {
 
   int? get _userId => ref.read(
         userProvider.select(
-          (state) => (state is UserAuthenticated) ? state.user.id! : null,
+          (state) => (state is AsyncData<UserModel>) ? state.value.id! : null,
         ),
       );
   GetTasksUsecase get _getTasksUsecase => ref.read(getTasksUsecaseProvider);
